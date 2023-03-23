@@ -10,4 +10,6 @@ make
 cd ..
 build/a1 ./swp/circles.swp
 ```
-### Part1--
+### Part1--曲线的绘制
+
+### Part2--曲面的绘制
