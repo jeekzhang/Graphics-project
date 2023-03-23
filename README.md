@@ -1,7 +1,6 @@
 # Graphics-project
 Computer Graphics Course (COMP130018.01) Project of Fudan University.
 
-### ---Wait for merging---
 
 ## Project1--曲线和曲面造型技术
 
