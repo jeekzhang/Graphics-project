@@ -44,19 +44,40 @@ Curve evalBezier(const vector< Vector3f >& P, unsigned steps)
 	// receive have G1 continuity.  Otherwise, the TNB will not be
 	// be defined at points where this does not hold.
 
-	cerr << "\t>>> evalBezier has been called with the following input:" << endl;
+	// cerr << "\t>>> evalBezier has been called with the following input:" << endl;
 
-	cerr << "\t>>> Control points (type vector< Vector3f >): " << endl;
-	for (int i = 0; i < (int)P.size(); ++i)
+	// cerr << "\t>>> Control points (type vector< Vector3f >): " << endl;
+	// for (int i = 0; i < (int)P.size(); ++i)
+	// {
+	// 	cerr << "\t>>> " << P[i] << endl;
+	// }
+
+	// cerr << "\t>>> Steps (type steps): " << steps << endl;
+	// cerr << "\t>>> Returning empty curve." << endl;
+
+	int control_group = P.size() / 3;
+	Curve Bez(control_group * (steps + 1));
+	for (int i = 0; i < control_group; i++)
 	{
-		cerr << "\t>>> " << P[i] << endl;
+
+		for (int j = 0; j <= steps; j++)
+		{
+			float t = float(j) / steps;
+			Bez[j].V = (1 - t) * (1 - t) * (1 - t) * P[3 * i] + 3 * t * (1 - t) * (1 - t) * P[3 * i + 1] + 3 * t * t * (1 - t) * P[3 * i + 2] + t * t * t * P[3 * i + 3];
+
+			Bez[j].T = -3 * (1 - t) * (1 - t) * P[3 * i] + 3 * (1 - 3 * t) * (1 - t) * P[3 * i + 1] + 3 * t * (2 - 3 * t) * P[3 * i + 2] + 3 * t * t * P[3 * i + 3];
+
+			if (j == 0)
+				Bez[j].N = Vector3f::cross(Vector3f(0, 0, 1), Bez[j].T);
+			else
+				Bez[j].N = Vector3f::cross(Bez[j - 1].B, Bez[j].T);
+
+			Bez[j].B = Vector3f::cross(Bez[j].T, Bez[j].N);
+		}
 	}
 
-	cerr << "\t>>> Steps (type steps): " << steps << endl;
-	cerr << "\t>>> Returning empty curve." << endl;
-
 	// Right now this will just return this empty curve.
-	return Curve();
+	return Bez;
 }
 
 Curve evalBspline(const vector< Vector3f >& P, unsigned steps)
