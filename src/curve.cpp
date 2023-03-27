@@ -65,14 +65,14 @@ Curve evalBezier(const vector< Vector3f >& P, unsigned steps)
 			float t = float(j) / steps;
 			Bez[j].V = (1 - t) * (1 - t) * (1 - t) * P[3 * i] + 3 * t * (1 - t) * (1 - t) * P[3 * i + 1] + 3 * t * t * (1 - t) * P[3 * i + 2] + t * t * t * P[3 * i + 3];
 
-			Bez[j].T = -3 * (1 - t) * (1 - t) * P[3 * i] + 3 * (1 - 3 * t) * (1 - t) * P[3 * i + 1] + 3 * t * (2 - 3 * t) * P[3 * i + 2] + 3 * t * t * P[3 * i + 3];
+			Bez[j].T = (-3 * (1 - t) * (1 - t) * P[3 * i] + 3 * (1 - 3 * t) * (1 - t) * P[3 * i + 1] + 3 * t * (2 - 3 * t) * P[3 * i + 2] + 3 * t * t * P[3 * i + 3]).normalized();
 
 			if (j == 0)
-				Bez[j].N = Vector3f::cross(Vector3f(0, 0, 1), Bez[j].T);
+				Bez[j].N = Vector3f::cross(Vector3f(0, 0, 1), Bez[j].T).normalized();
 			else
-				Bez[j].N = Vector3f::cross(Bez[j - 1].B, Bez[j].T);
+				Bez[j].N = Vector3f::cross(Bez[j - 1].B, Bez[j].T).normalized();
 
-			Bez[j].B = Vector3f::cross(Bez[j].T, Bez[j].N);
+			Bez[j].B = Vector3f::cross(Bez[j].T, Bez[j].N).normalized();
 		}
 	}
 
