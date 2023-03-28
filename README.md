@@ -14,6 +14,8 @@ cd ..
 build/a1 ./swp/circles.swp
 ```
 ### Part1--曲线的绘制
-
-
+测试：
+```
+build/a1 ./swp/flircle.swp
+```
 ### Part2--曲面的绘制
