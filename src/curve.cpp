@@ -56,23 +56,23 @@ Curve evalBezier(const vector< Vector3f >& P, unsigned steps)
 	// cerr << "\t>>> Returning empty curve." << endl;
 
 	int control_group = P.size() / 3;
-	Curve Bez(control_group * (steps + 1));
+	Curve Bez(control_group * steps );
 	for (int i = 0; i < control_group; i++)
 	{
 
-		for (int j = 0; j <= steps; j++)
+		for (int j = 0; j < steps; j++)
 		{
 			float t = float(j) / steps;
-			Bez[j].V = (1 - t) * (1 - t) * (1 - t) * P[3 * i] + 3 * t * (1 - t) * (1 - t) * P[3 * i + 1] + 3 * t * t * (1 - t) * P[3 * i + 2] + t * t * t * P[3 * i + 3];
+			Bez[steps*i+j].V = (1 - t) * (1 - t) * (1 - t) * P[3 * i] + 3 * t * (1 - t) * (1 - t) * P[3 * i + 1] + 3 * t * t * (1 - t) * P[3 * i + 2] + t * t * t * P[3 * i + 3];
 
-			Bez[j].T = (-3 * (1 - t) * (1 - t) * P[3 * i] + 3 * (1 - 3 * t) * (1 - t) * P[3 * i + 1] + 3 * t * (2 - 3 * t) * P[3 * i + 2] + 3 * t * t * P[3 * i + 3]).normalized();
+			Bez[steps*i+j].T = (-3 * (1 - t) * (1 - t) * P[3 * i] + 3 * (1 - 3 * t) * (1 - t) * P[3 * i + 1] + 3 * t * (2 - 3 * t) * P[3 * i + 2] + 3 * t * t * P[3 * i + 3]).normalized();
 
-			if (j == 0)
-				Bez[j].N = Vector3f::cross(Vector3f(0, 0, 1), Bez[j].T).normalized();
+			if (i + j == 0)
+				Bez[steps*i+j].N = Vector3f::cross(Vector3f(0, 0, 1), Bez[steps*i+j].T).normalized();
 			else
-				Bez[j].N = Vector3f::cross(Bez[j - 1].B, Bez[j].T).normalized();
+				Bez[steps*i+j].N = Vector3f::cross(Bez[steps*i+j - 1].B, Bez[steps*i+j].T).normalized();
 
-			Bez[j].B = Vector3f::cross(Bez[j].T, Bez[j].N).normalized();
+			Bez[steps*i+j].B = Vector3f::cross(Bez[steps*i+j].T, Bez[steps*i+j].N).normalized();
 		}
 	}
 
@@ -94,19 +94,41 @@ Curve evalBspline(const vector< Vector3f >& P, unsigned steps)
 	// basis from B-spline to Bezier.  That way, you can just call
 	// your evalBezier function.
 
-	cerr << "\t>>> evalBSpline has been called with the following input:" << endl;
+	// cerr << "\t>>> evalBSpline has been called with the following input:" << endl;
 
-	cerr << "\t>>> Control points (type vector< Vector3f >): " << endl;
-	for (int i = 0; i < (int)P.size(); ++i)
+	// cerr << "\t>>> Control points (type vector< Vector3f >): " << endl;
+	// for (int i = 0; i < (int)P.size(); ++i)
+	// {
+	// 	cerr << "\t>>> " << P[i] << endl;
+	// }
+
+	// cerr << "\t>>> Steps (type steps): " << steps << endl;
+	// cerr << "\t>>> Returning empty curve." << endl;
+	int control_group = P.size() - 3;
+	Curve Bsp(control_group * steps);
+
+	for (int i = 0; i < control_group; i++)
 	{
-		cerr << "\t>>> " << P[i] << endl;
+
+		for (int j = 0; j < steps; j++)
+		{
+			float t = float(j) / steps;
+			Bsp[steps*i+j].V = (1 - t) * (1 - t) * (1 - t) / 6.0f * P[i] + (4 - 6 * t * t + 3 * t * t * t) / 6.0f * P[i + 1] + (1 + 3 * t + 3 * t * t - 3 * t * t * t) / 6.0f * P[i + 2] + (t * t * t) / 6.0f * P[i + 3];
+
+			Bsp[steps*i+j].T = (-(1 - t) * (1 - t) / 2.0f * P[i] + (-4 * t + 3 * t * t) / 2.0f * P[i + 1] + (1 + 2 * t - 3 * t * t) / 2.0f * P[i + 2] + (t * t) / 2.0f * P[i + 3]).normalized();
+
+			if (i + j == 0)
+				Bsp[steps*i+j].N = Vector3f::cross(Vector3f(0, 0, 1), Bsp[steps*i+j].T).normalized();
+			else
+				Bsp[steps * i + j].N = Vector3f::cross(Bsp[steps * i + j - 1].B, Bsp[steps * i + j].T).normalized();
+
+			Bsp[steps*i+j].B = Vector3f::cross(Bsp[steps*i+j].T, Bsp[steps*i+j].N).normalized();
+
+		}
 	}
 
-	cerr << "\t>>> Steps (type steps): " << steps << endl;
-	cerr << "\t>>> Returning empty curve." << endl;
-
 	// Return an empty curve right now.
-	return Curve();
+	return Bsp;
 }
 
 Curve evalCircle(float radius, unsigned steps)
