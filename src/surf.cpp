@@ -2,6 +2,8 @@
 #include "vertexrecorder.h"
 using namespace std;
 
+const float c_pi = 3.14159265358979323846f;
+
 namespace
 {
     
@@ -40,7 +42,7 @@ Surface quad() {
 Surface makeSurfRev(const Curve &profile, unsigned steps)
 {
     Surface surface;
-	surface = quad();
+	// surface = quad();
     
     if (!checkFlat(profile))
     {
@@ -50,8 +52,29 @@ Surface makeSurfRev(const Curve &profile, unsigned steps)
 
     // TODO: Here you should build the surface.  See surf.h for details.
 
-    cerr << "\t>>> makeSurfRev called (but not implemented).\n\t>>> Returning empty surface." << endl;
- 
+    // cerr << "\t>>> makeSurfRev called (but not implemented).\n\t>>> Returning empty surface." << endl;
+    int n=profile.size();
+    for (int i = 0; i < steps; i++)
+    {
+        float t = 2.0f * c_pi * float(i) / steps;
+        float ct = cos(t);
+        float st = sin(t);
+        for (int j = 0; j < n; j++)
+        {
+            surface.VV.push_back(Vector3f(ct * profile[j].V[0] + st * profile[j].V[2], profile[j].V[1], -st * profile[j].V[0] + ct * profile[j].V[2]));
+            surface.VN.push_back(Vector3f(-ct * profile[j].N[0] - st * profile[j].N[2], -profile[j].N[1], st * profile[j].N[0] - ct * profile[j].N[2]));
+        }
+        int k=0;
+        int m=surface.VV.size();
+        while(k<m){
+            if((k+1)%n!=0){
+                surface.VF.push_back(Tup3u(k, k+1, (k+n)%m));
+                surface.VF.push_back(Tup3u((k+n)%m, k+1, (k+n+1)%m));
+            }
+            k++;
+        }
+    }
+
     return surface;
 }
 
