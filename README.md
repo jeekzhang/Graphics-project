@@ -30,5 +30,9 @@ build/a1 ./swp/core.swp
 build/a1 ./swp/wineglass.swp
 ```
 ```bash
+build/a1 ./swp/weird.swp
+'''
+### Expansion--曲面的闭合问题
+```bash
 build/a1 ./swp/weirder.swp
 ```
