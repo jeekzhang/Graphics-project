@@ -29,3 +29,6 @@ build/a1 ./swp/core.swp
 ```bash
 build/a1 ./swp/wineglass.swp
 ```
+```bash
+build/a1 ./swp/weirder.swp
+```
