@@ -26,6 +26,7 @@ build/a1 ./swp/core.swp
 ```
 
 ### Part2--曲面的绘制
+测试：
 ```bash
 build/a1 ./swp/wineglass.swp
 ```
