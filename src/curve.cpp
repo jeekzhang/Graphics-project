@@ -6,19 +6,17 @@ const float c_pi = 3.14159265358979323846f;
 
 namespace
 {
-// Approximately equal to.  We don't want to use == because of
-// precision issues with floating point.
-inline bool approx(const Vector3f& lhs, const Vector3f& rhs)
-{
-	const float eps = 1e-8f;
-	return (lhs - rhs).absSquared() < eps;
+	// Approximately equal to.  We don't want to use == because of
+	// precision issues with floating point.
+	inline bool approx(const Vector3f &lhs, const Vector3f &rhs)
+	{
+		const float eps = 1e-8f;
+		return (lhs - rhs).absSquared() < eps;
+	}
+
 }
 
-
-}
-
-
-Curve evalBezier(const vector< Vector3f >& P, unsigned steps)
+Curve evalBezier(const vector<Vector3f> &P, unsigned steps)
 {
 	// Check
 	if (P.size() < 4 || P.size() % 3 != 1)
@@ -56,23 +54,23 @@ Curve evalBezier(const vector< Vector3f >& P, unsigned steps)
 	// cerr << "\t>>> Returning empty curve." << endl;
 
 	int control_group = P.size() / 3;
-	Curve Bez(control_group * steps );
+	Curve Bez(control_group * steps);
 	for (int i = 0; i < control_group; i++)
 	{
 
 		for (int j = 0; j < steps; j++)
 		{
 			float t = float(j) / steps;
-			Bez[steps*i+j].V = (1 - t) * (1 - t) * (1 - t) * P[3 * i] + 3 * t * (1 - t) * (1 - t) * P[3 * i + 1] + 3 * t * t * (1 - t) * P[3 * i + 2] + t * t * t * P[3 * i + 3];
+			Bez[steps * i + j].V = (1 - t) * (1 - t) * (1 - t) * P[3 * i] + 3 * t * (1 - t) * (1 - t) * P[3 * i + 1] + 3 * t * t * (1 - t) * P[3 * i + 2] + t * t * t * P[3 * i + 3];
 
-			Bez[steps*i+j].T = (-3 * (1 - t) * (1 - t) * P[3 * i] + 3 * (1 - 3 * t) * (1 - t) * P[3 * i + 1] + 3 * t * (2 - 3 * t) * P[3 * i + 2] + 3 * t * t * P[3 * i + 3]).normalized();
+			Bez[steps * i + j].T = (-3 * (1 - t) * (1 - t) * P[3 * i] + 3 * (1 - 3 * t) * (1 - t) * P[3 * i + 1] + 3 * t * (2 - 3 * t) * P[3 * i + 2] + 3 * t * t * P[3 * i + 3]).normalized();
 
 			if (i + j == 0)
-				Bez[steps*i+j].N = Vector3f::cross(Vector3f(0, 0, 1), Bez[steps*i+j].T).normalized();
+				Bez[steps * i + j].N = Vector3f::cross(Vector3f(0, 0, 1), Bez[steps * i + j].T).normalized();
 			else
-				Bez[steps*i+j].N = Vector3f::cross(Bez[steps*i+j - 1].B, Bez[steps*i+j].T).normalized();
+				Bez[steps * i + j].N = Vector3f::cross(Bez[steps * i + j - 1].B, Bez[steps * i + j].T).normalized();
 
-			Bez[steps*i+j].B = Vector3f::cross(Bez[steps*i+j].T, Bez[steps*i+j].N).normalized();
+			Bez[steps * i + j].B = Vector3f::cross(Bez[steps * i + j].T, Bez[steps * i + j].N).normalized();
 		}
 	}
 
@@ -80,7 +78,7 @@ Curve evalBezier(const vector< Vector3f >& P, unsigned steps)
 	return Bez;
 }
 
-Curve evalBspline(const vector< Vector3f >& P, unsigned steps)
+Curve evalBspline(const vector<Vector3f> &P, unsigned steps)
 {
 	// Check
 	if (P.size() < 4)
@@ -113,17 +111,16 @@ Curve evalBspline(const vector< Vector3f >& P, unsigned steps)
 		for (int j = 0; j < steps; j++)
 		{
 			float t = float(j) / steps;
-			Bsp[steps*i+j].V = (1 - t) * (1 - t) * (1 - t) / 6.0f * P[i] + (4 - 6 * t * t + 3 * t * t * t) / 6.0f * P[i + 1] + (1 + 3 * t + 3 * t * t - 3 * t * t * t) / 6.0f * P[i + 2] + (t * t * t) / 6.0f * P[i + 3];
+			Bsp[steps * i + j].V = (1 - t) * (1 - t) * (1 - t) / 6.0f * P[i] + (4 - 6 * t * t + 3 * t * t * t) / 6.0f * P[i + 1] + (1 + 3 * t + 3 * t * t - 3 * t * t * t) / 6.0f * P[i + 2] + (t * t * t) / 6.0f * P[i + 3];
 
-			Bsp[steps*i+j].T = (-(1 - t) * (1 - t) / 2.0f * P[i] + (-4 * t + 3 * t * t) / 2.0f * P[i + 1] + (1 + 2 * t - 3 * t * t) / 2.0f * P[i + 2] + (t * t) / 2.0f * P[i + 3]).normalized();
+			Bsp[steps * i + j].T = (-(1 - t) * (1 - t) / 2.0f * P[i] + (-4 * t + 3 * t * t) / 2.0f * P[i + 1] + (1 + 2 * t - 3 * t * t) / 2.0f * P[i + 2] + (t * t) / 2.0f * P[i + 3]).normalized();
 
 			if (i + j == 0)
-				Bsp[steps*i+j].N = Vector3f::cross(Vector3f(0, 0, 1), Bsp[steps*i+j].T).normalized();
+				Bsp[steps * i + j].N = Vector3f::cross(Vector3f(0, 0, 1), Bsp[steps * i + j].T).normalized();
 			else
 				Bsp[steps * i + j].N = Vector3f::cross(Bsp[steps * i + j - 1].B, Bsp[steps * i + j].T).normalized();
 
-			Bsp[steps*i+j].B = Vector3f::cross(Bsp[steps*i+j].T, Bsp[steps*i+j].N).normalized();
-
+			Bsp[steps * i + j].B = Vector3f::cross(Bsp[steps * i + j].T, Bsp[steps * i + j].N).normalized();
 		}
 	}
 
@@ -162,7 +159,7 @@ Curve evalCircle(float radius, unsigned steps)
 	return R;
 }
 
-void recordCurve(const Curve& curve, VertexRecorder* recorder)
+void recordCurve(const Curve &curve, VertexRecorder *recorder)
 {
 	const Vector3f WHITE(1, 1, 1);
 	for (int i = 0; i < (int)curve.size() - 1; ++i)
@@ -171,13 +168,13 @@ void recordCurve(const Curve& curve, VertexRecorder* recorder)
 		recorder->record_poscolor(curve[i + 1].V, WHITE);
 	}
 }
-void recordCurveFrames(const Curve& curve, VertexRecorder* recorder, float framesize)
+void recordCurveFrames(const Curve &curve, VertexRecorder *recorder, float framesize)
 {
 	Matrix4f T;
 	const Vector3f RED(1, 0, 0);
 	const Vector3f GREEN(0, 1, 0);
 	const Vector3f BLUE(0, 0, 1);
-	
+
 	const Vector4f ORGN(0, 0, 0, 1);
 	const Vector4f AXISX(framesize, 0, 0, 1);
 	const Vector4f AXISY(0, framesize, 0, 1);
@@ -189,9 +186,9 @@ void recordCurveFrames(const Curve& curve, VertexRecorder* recorder, float frame
 		T.setCol(1, Vector4f(curve[i].B, 0));
 		T.setCol(2, Vector4f(curve[i].T, 0));
 		T.setCol(3, Vector4f(curve[i].V, 1));
- 
+
 		// Transform orthogonal frames into model space
-		Vector4f MORGN  = T * ORGN;
+		Vector4f MORGN = T * ORGN;
 		Vector4f MAXISX = T * AXISX;
 		Vector4f MAXISY = T * AXISY;
 		Vector4f MAXISZ = T * AXISZ;
@@ -207,4 +204,3 @@ void recordCurveFrames(const Curve& curve, VertexRecorder* recorder, float frame
 		recorder->record_poscolor(MAXISZ.xyz(), BLUE);
 	}
 }
-

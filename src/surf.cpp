@@ -40,7 +40,7 @@ Surface quad()
     return ret;
 }
 
-void addTriangle(Surface &surface,const int &n)
+void addTriangle(Surface &surface, const int &n)
 {
     int k = 0;
     int m = surface.VV.size();
@@ -88,7 +88,7 @@ Surface makeSurfRev(const Curve &profile, unsigned steps)
 Surface makeGenCyl(const Curve &profile, const Curve &sweep)
 {
     Surface surface;
-    surface = quad();
+    // surface = quad();
 
     if (!checkFlat(profile))
     {
@@ -98,8 +98,21 @@ Surface makeGenCyl(const Curve &profile, const Curve &sweep)
 
     // TODO: Here you should build the surface.  See surf.h for details.
 
-    cerr << "\t>>> makeGenCyl called (but not implemented).\n\t>>> Returning empty surface." << endl;
+    // cerr << "\t>>> makeGenCyl called (but not implemented).\n\t>>> Returning empty surface." << endl;
 
+    int n = profile.size();
+    for (int i = 0; i < sweep.size(); i++)
+    {
+        Matrix4f nbtv_mat(Vector4f(sweep[i].N, 0), Vector4f(sweep[i].B, 0), Vector4f(sweep[i].T, 0), Vector4f(sweep[i].V, 1));
+        Matrix3f nbt_mat = nbtv_mat.getSubmatrix3x3(0, 0);
+        for (int j = 0; j < n; j++)
+        {
+
+            surface.VV.push_back((nbtv_mat * Vector4f(profile[j].V, 1)).xyz());
+            surface.VN.push_back(-1 * mat * profile[j].N);
+        }
+    }
+    addTriangle(surface, n);
     return surface;
 }
 
