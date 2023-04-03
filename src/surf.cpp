@@ -109,7 +109,7 @@ Surface makeGenCyl(const Curve &profile, const Curve &sweep)
         {
 
             surface.VV.push_back((nbtv_mat * Vector4f(profile[j].V, 1)).xyz());
-            surface.VN.push_back(-1 * mat * profile[j].N);
+            surface.VN.push_back(-1 * nbt_mat * profile[j].N);
         }
     }
     addTriangle(surface, n);
