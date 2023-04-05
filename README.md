@@ -10,6 +10,8 @@ Computer Graphics Course (COMP130018.01) Project of Fudan University.
 mkdir build
 cd build
 cmake ..
+```
+```bash
 make
 cd ..
 build/a1 ./swp/circles.swp
