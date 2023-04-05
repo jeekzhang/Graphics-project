@@ -1,5 +1,6 @@
 #include "surf.h"
 #include "vertexrecorder.h"
+
 using namespace std;
 
 const float c_pi = 3.14159265358979323846f;
@@ -44,12 +45,12 @@ void addTriangle(Surface &surface, const int &n)
 {
     int k = 0;
     int m = surface.VV.size();
-    while (k < m)
+    while (k < m - n)
     {
         if ((k + 1) % n != 0)
         {
-            surface.VF.push_back(Tup3u(k, k + 1, (k + n) % m));
-            surface.VF.push_back(Tup3u((k + n) % m, k + 1, (k + n + 1) % m));
+            surface.VF.push_back(Tup3u(k, k + 1, k + n));
+            surface.VF.push_back(Tup3u(k + n, k + 1, k + n + 1));
         }
         k++;
     }
@@ -81,6 +82,11 @@ Surface makeSurfRev(const Curve &profile, unsigned steps)
             surface.VN.push_back(Vector3f(-ct * profile[j].N[0] - st * profile[j].N[2], -profile[j].N[1], st * profile[j].N[0] - ct * profile[j].N[2]));
         }
     }
+    for (int j = 0; j < n; j++)
+    {
+        surface.VV.push_back(surface.VV[j]);
+        surface.VN.push_back(surface.VN[j]);
+    }
     addTriangle(surface, n);
     return surface;
 }
@@ -101,6 +107,10 @@ Surface makeGenCyl(const Curve &profile, const Curve &sweep)
     // cerr << "\t>>> makeGenCyl called (but not implemented).\n\t>>> Returning empty surface." << endl;
 
     int n = profile.size();
+    // if ((sweep[0].V - sweep[sweep.size() - 1].V).abs() < 0.01 && (sweep[0].N - sweep[sweep.size() - 1].N).abs() < 0.01 && (sweep[0].B - sweep[sweep.size() - 1].B).abs() > 0.01)
+    // {
+    //     sweep[sweep.size() - 1].B = sweep[0].B;
+    // }
     for (int i = 0; i < sweep.size(); i++)
     {
         Matrix4f nbtv_mat(Vector4f(sweep[i].N, 0), Vector4f(sweep[i].B, 0), Vector4f(sweep[i].T, 0), Vector4f(sweep[i].V, 1));
@@ -112,6 +122,7 @@ Surface makeGenCyl(const Curve &profile, const Curve &sweep)
             surface.VN.push_back(-1 * nbt_mat * profile[j].N);
         }
     }
+
     addTriangle(surface, n);
     return surface;
 }

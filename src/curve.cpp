@@ -123,6 +123,8 @@ Curve evalBspline(const vector<Vector3f> &P, unsigned steps)
 			Bsp[steps * i + j].B = Vector3f::cross(Bsp[steps * i + j].T, Bsp[steps * i + j].N).normalized();
 		}
 	}
+	if (P[control_group] == P[0] && P[control_group + 1] == P[1] && P[control_group + 2] == P[2])
+		Bsp.push_back(Bsp[0]);
 
 	// Return an empty curve right now.
 	return Bsp;
