@@ -1,6 +1,6 @@
 #include "surf.h"
 #include "vertexrecorder.h"
-
+#include <iostream>
 using namespace std;
 
 const float c_pi = 3.14159265358979323846f;
@@ -76,6 +76,7 @@ Surface makeSurfRev(const Curve &profile, unsigned steps)
         float t = 2.0f * c_pi * float(i) / steps;
         float ct = cos(t);
         float st = sin(t);
+
         for (int j = 0; j < n; j++)
         {
             surface.VV.push_back(Vector3f(ct * profile[j].V[0] + st * profile[j].V[2], profile[j].V[1], -st * profile[j].V[0] + ct * profile[j].V[2]));
@@ -107,19 +108,42 @@ Surface makeGenCyl(const Curve &profile, const Curve &sweep)
     // cerr << "\t>>> makeGenCyl called (but not implemented).\n\t>>> Returning empty surface." << endl;
 
     int n = profile.size();
-    // if ((sweep[0].V - sweep[sweep.size() - 1].V).abs() < 0.01 && (sweep[0].N - sweep[sweep.size() - 1].N).abs() < 0.01 && (sweep[0].B - sweep[sweep.size() - 1].B).abs() > 0.01)
-    // {
-    //     sweep[sweep.size() - 1].B = sweep[0].B;
-    // }
-    for (int i = 0; i < sweep.size(); i++)
+    int m = sweep.size();
+
+    int flag = int((sweep[m - 2].B - sweep[0].B).abs() * 10);
+    if (sweep[0].V != sweep[m - 1].V)
+        flag = 0;
+
+    for (int i = 0; i < m - flag; i++)
     {
+
         Matrix4f nbtv_mat(Vector4f(sweep[i].N, 0), Vector4f(sweep[i].B, 0), Vector4f(sweep[i].T, 0), Vector4f(sweep[i].V, 1));
         Matrix3f nbt_mat = nbtv_mat.getSubmatrix3x3(0, 0);
+
         for (int j = 0; j < n; j++)
         {
 
             surface.VV.push_back((nbtv_mat * Vector4f(profile[j].V, 1)).xyz());
             surface.VN.push_back(-1 * nbt_mat * profile[j].N);
+        }
+    }
+    if (flag > 0)
+    {
+        for (float f = 0; f <= 1; f += 0.01)
+        {
+            Vector3f SN = ((1 - f) * sweep[m - flag - 1].N + f * sweep[0].N).normalized();
+            Vector3f SB = ((1 - f) * sweep[m - flag - 1].B + f * sweep[0].B).normalized();
+            Vector3f ST = ((1 - f) * sweep[m - flag - 1].T + f * sweep[0].T).normalized();
+            Vector3f SV = ((1 - f) * sweep[m - flag - 1].V + f * sweep[0].V);
+            Matrix4f _nbtv_mat(Vector4f(SN, 0), Vector4f(SB, 0), Vector4f(ST, 0), Vector4f(SV, 1));
+            Matrix3f _nbt_mat = _nbtv_mat.getSubmatrix3x3(0, 0);
+
+            for (int j = 0; j < n; j++)
+            {
+
+                surface.VV.push_back((_nbtv_mat * Vector4f(profile[j].V, 1)).xyz());
+                surface.VN.push_back(-1 * _nbt_mat * profile[j].N);
+            }
         }
     }
 
