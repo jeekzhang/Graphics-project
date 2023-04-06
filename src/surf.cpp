@@ -129,7 +129,7 @@ Surface makeGenCyl(const Curve &profile, const Curve &sweep)
     }
     if (flag > 0)
     {
-        for (float f = 0; f <= 1; f += 0.01)
+        for (float f = 0; f <= 1; f += 1.0 / float(flag))
         {
             Vector3f SN = ((1 - f) * sweep[m - flag - 1].N + f * sweep[0].N).normalized();
             Vector3f SB = ((1 - f) * sweep[m - flag - 1].B + f * sweep[0].B).normalized();
