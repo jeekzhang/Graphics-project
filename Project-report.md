@@ -360,8 +360,71 @@ weird:
 
 
 ## 三、解决闭合问题：
+### 曲面闭合问题解决：
+广义曲面生成时，存在曲面错位不闭合的问题。该问题产生的原因是扫掠线上该处控制点坐标和切线相同，但是法线和次法线不同。以下是解决该问题的逻辑。  
+首先，我们会判断扫掠线首尾控制点的次法线是否相同。这里是通过差值是否达到阈值判定，同时也计算出次法线差值的大小。
+然后，通过比较首末扫掠线中的控制点判断该曲线本身是否闭合，如果其本身就不闭合，就没有必要进行后续闭合生成曲面的处理，这里是将flag置0.
+``` c++
+    int flag = int((sweep[m - 2].B - sweep[0].B).abs() * 10);
+    if (sweep[0].V != sweep[m - 1].V)
+        flag = 0;
+```
+在进行完除首尾不闭合处的扫掠之后，我们在不闭合的位置处进行添加控制点和法向量的操作，控制点和法向量会线性地进行添加，添加的个数由flag即次法线的差值大小决定。
+``` c++
+    if (flag > 0)
+    {
+        for (float f = 0; f <= 1; f += 1.0 / float(flag))
+        {
+            Vector3f SN = ((1 - f) * sweep[m - flag - 1].N + f * sweep[0].N).normalized();
+            Vector3f SB = ((1 - f) * sweep[m - flag - 1].B + f * sweep[0].B).normalized();
+            Vector3f ST = ((1 - f) * sweep[m - flag - 1].T + f * sweep[0].T).normalized();
+            Vector3f SV = ((1 - f) * sweep[m - flag - 1].V + f * sweep[0].V);
+            Matrix4f _nbtv_mat(Vector4f(SN, 0), Vector4f(SB, 0), Vector4f(ST, 0), Vector4f(SV, 1));
+            Matrix3f _nbt_mat = _nbtv_mat.getSubmatrix3x3(0, 0);
+
+            for (int j = 0; j < n; j++)
+            {
+
+                surface.VV.push_back((_nbtv_mat * Vector4f(profile[j].V, 1)).xyz());
+                surface.VN.push_back(-1 * _nbt_mat * profile[j].N);
+            }
+        }
+    }
+```
+### 曲面闭合问题效果展示：
+weirder
+<div align=center><img width = '400' height ='400' src ="./img/weirder.jpg"/></div>
+
+这里我们添加了扫掠线本身不闭合的测试样例，测试数据和测试效果如下  
+test
+<div align=center><img width = '400' height ='400' src ="./img/test.jpg"/></div>
+
+```
+bsp2 profile 8 9
+[0.000000 -0.250000]
+[0.550000 -0.550000]
+[0.250000 0.000000]
+[0.550000 0.550000]
+[-0.550000 0.550000]
+[-0.250000 0.000000]
+[0.000000 -0.250000]
+[0.550000 -0.550000]
+[0.250000 0.000000]
 
 
+bsp3 sweep 16 9
+[-1.427273 0.424545 0.929339]
+[-1.767273 -1.585455 0.371157]
+[0.912727 -1.585455 -0.278843]
+[1.922727 -0.255455 -0.080661]
+[1.582727 1.374545 -1.050661]
+[0.212727 1.034545 -1.260661]
+[-1.097273 1.444545 0.259339]
+[-1.427273 0.424545 0.929339]
+[-1.767273 -1.585455 0.371157]
+
+gcyl weirder profile sweep 
+```
 
 ## 参考
 
