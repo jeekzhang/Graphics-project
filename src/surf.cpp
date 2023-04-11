@@ -110,7 +110,7 @@ Surface makeGenCyl(const Curve &profile, const Curve &sweep)
     int n = profile.size();
     int m = sweep.size();
 
-    int flag = int((sweep[m - 2].B - sweep[0].B).abs() * 10);
+    int flag = int((sweep[m - 2].N - sweep[0].N).abs() * 10);
     if (sweep[0].V != sweep[m - 1].V)
         flag = 0;
 
