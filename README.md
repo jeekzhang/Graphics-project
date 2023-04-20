@@ -1,7 +1,7 @@
 # Graphics-project
 Computer Graphics Course (COMP130018.01) Project of Fudan University.
 
-## Project1--曲线和曲面造型技术
+## Project--2 光照模型与光线追踪
 环境搭建（linux）
 ```bash
 sudo apt-get install build-essential cmake
