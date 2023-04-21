@@ -78,7 +78,19 @@ Renderer::traceRay(const Ray &r,
 
     // TODO: IMPLEMENT 
     if (_scene.getGroup()->intersect(r, tmin, h)) {
-        return h.getMaterial()->getDiffuseColor();
+        // return h.getMaterial()->getDiffuseColor();
+        Vector3f color(0, 0, 0);
+        for (int i = 0; i < _scene.lights.size(); i++)
+        {
+            _scene.lights[i];
+            Vector3f dirToLight;
+            Vector3f lightIntensity;
+            float distToLight;
+            _scene.lights[i]->getIllumination(r.pointAtParameter(h.getT()), dirToLight, lightIntensity, distToLight);
+            color += h.getMaterial()->shade(r, h, dirToLight, lightIntensity);
+        }
+        color += _scene.getAmbientLight();
+        return color;
     } else {
         return Vector3f(0, 0, 0);
     };
