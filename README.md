@@ -27,7 +27,22 @@ sample_solution/athena/a2 -input data/scene01_plane.txt -output sample_out/01.pn
 sample_solution/athena/a2 -input data/scene06_bunny_1k.txt -output sample_out/06.png -size 300 300 -bounces 4
 sample_solution/athena/a2 data/scene07_arch.txt -output sample_out/07.png -size 300 300 -shadows -bounces 4
 ```
+批量生成并测试
+
+```bash
+chmod +x generate_images.sh
+./generate_images.sh
+```
+
+```bash
+chmod +x test_cases.sh
+./test_cases.sh
+```
+
+
+
 ### Part1--Phong光照模型
+
 测试：
 ```bash
 build/a1 ./swp/core.swp
