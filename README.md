@@ -45,7 +45,7 @@ chmod +x test_cases.sh
 
 测试：
 ```bash
-build/a1 ./swp/core.swp
+build/a2 -size 800 800 -input data/scene01_plane.txt  -output test_out/a01.png -normals test_out/a01n.png -depth 8 18 test_out/a01d.png
 ```
 
 ### Part2--光线投射
