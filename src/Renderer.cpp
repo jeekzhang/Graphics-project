@@ -93,7 +93,7 @@ Renderer::traceRay(const Ray &r,
             //生成阴影
             if (_args.shadows) {
                 //以光打到的点作为光源，计算阴影覆盖的区域
-                Vector3f shadowRayOrigin = r.pointAtParameter(h.getT());
+                Vector3f shadowRayOrigin = r.pointAtParameter(h.getT()) + 0.05 * dirToLight;
                 Ray shadowRay(shadowRayOrigin, dirToLight);
                 Hit shadowHit = Hit();
                 Vector3f shadowTrace = traceRay(shadowRay, 0, 0, shadowHit);
