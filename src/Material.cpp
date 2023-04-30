@@ -12,9 +12,9 @@ Vector3f Material::shade(const Ray &ray,
         clamp_LN = 0;
     Vector3f diffuse = clamp_LN * lightIntensity * _diffuseColor;
 
-    float clamp_LR = cos(acos(Vector3f::dot(ray.getDirection(), hit.getNormal())) - 2 * asin(Vector3f::dot(-ray.getDirection(), hit.getNormal()))) * hit.getNormal().abs();
+    float clamp_LR = Vector3f::dot(dirToLight, 2.0 * Vector3f::dot(-ray.getDirection(), hit.getNormal()) * hit.getNormal() + ray.getDirection());
     if (clamp_LR < 0)
         clamp_LR = 0;
     Vector3f specular = pow(clamp_LR, _shininess) * lightIntensity * _specularColor;
-    return diffuse+specular;
+    return diffuse + specular;
 }
