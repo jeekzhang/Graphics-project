@@ -54,7 +54,7 @@ build/a2 -size 800 800 -input data/scene01_plane.txt  -output test_out/a01.png -
 build/a2 -size 800 800 -input data/scene01_plane.txt  -output test_out/b01.png -normals test_out/b01n.png -depth 8 18 test_out/b01d.png
 ```
 ```bash
-build/a1 ./swp/weird.swp
+build/a2 -size 800 800 -input data/scene02_cube.txt   -output test_out/b02.png -normals test_out/b02n.png -depth 8 18 test_out/b02d.png
 ```
 ###  Part3--光线追踪与阴影投射
 
