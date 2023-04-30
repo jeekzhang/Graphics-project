@@ -25,7 +25,7 @@ build/a2 -input data/scene01_plane.txt -output test_out/01.png -size 200 200
 chmod u+x sample_solution/athena/a2
 sample_solution/athena/a2 -input data/scene01_plane.txt -output sample_out/01.png -size 200 200
 sample_solution/athena/a2 -input data/scene06_bunny_1k.txt -output sample_out/06.png -size 300 300 -bounces 4
-sample_solution/athena/a2 data/scene07_arch.txt -output sample_out/07.png -size 300 300 -shadows -bounces 4
+sample_solution/athena/a2 -input data/scene07_arch.txt -output sample_out/07.png -size 300 300 -shadows -bounces 4
 ```
 批量生成图片并测试
 
@@ -62,12 +62,19 @@ build/a2 -size 800 800 -input data/scene04_axes.txt   -output test_out/a04.png -
 build/a2 -size 800 800 -input data/scene05_bunny_200.txt -output test_out/a05.png -normals test_out/a05n.png -depth 0.8 1.0 test_out/a05d.png
 ```
 ###  Part3--光线追踪与阴影投射
-
+```bash
+build/a2 -size 800 800 -input data/scene02_cube.txt   -output test_out/b02.png -normals test_out/b02n.png -depth 8 18 test_out/b02d.png
+build/a2 -size 800 800 -input data/scene05_bunny_200.txt -output test_out/b05.png -normals test_out/b05n.png -depth 0.8 1.0 test_out/b05d.png
+```
+```bash
+build/a2 -size 800 800 -input data/scene06_bunny_1k.txt -bounces 4 -output test_out/a06.png -normals test_out/a06n.png -depth 8 18 test_out/a06d.png
+build/a2 -size 800 800 -input data/scene07_arch.txt -bounces 4 -shadows -output test_out/a07.png -normals test_out/a07n.png -depth 8 18 test_out/a07d.png
+```
 
 
 ### Expansion-- 抗锯齿的问题
 
 测试：
 ```bash
-build/a1 ./swp/weirder.swp
+
 ```
