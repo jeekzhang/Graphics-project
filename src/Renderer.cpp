@@ -80,6 +80,7 @@ Renderer::traceRay(const Ray &r,
     if (_scene.getGroup()->intersect(r, tmin, h)) {
         // return h.getMaterial()->getDiffuseColor();
         Vector3f color(0, 0, 0);
+        color = _scene.getAmbientLight() * h.getMaterial()->getDiffuseColor();
         for (int i = 0; i < _scene.lights.size(); i++)
         {
             _scene.lights[i];
@@ -87,12 +88,29 @@ Renderer::traceRay(const Ray &r,
             Vector3f lightIntensity;
             float distToLight;
             _scene.lights[i]->getIllumination(r.pointAtParameter(h.getT()), dirToLight, lightIntensity, distToLight);
+
+            //生成阴影
+            if(_args.shadows){
+                
+            }
+
             color += h.getMaterial()->shade(r, h, dirToLight, lightIntensity);
         }
-        color += _scene.getAmbientLight();
+
+
+        // 递归调用traceRay()
+        if(bounces > 0){
+            Vector3f V = r.getDirection();
+            Vector3f N = h.getNormal().normalized();
+            Vector3f R = (V - (2 * Vector3f::dot(V, N) * N)).normalized();
+            //避免噪音
+            Ray reflectRay(r.pointAtParameter(h.getT()) + 0.01 * R, R);
+            color += (h.getMaterial()->getSpecularColor()) * traceRay(reflectRay, 0.0f, bounces - 1, h);
+        }
+
         return color;
     } else {
-        return Vector3f(0, 0, 0);
+        return _scene.getBackgroundColor(r.getDirection());
     };
 }
 

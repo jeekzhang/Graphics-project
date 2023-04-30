@@ -1,4 +1,4 @@
-# Install script for directory: /home/jeekzhang/pj/starter2/vecmath
+# Install script for directory: /home/ecoli/Desktop/Graphics-project/vecmath
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

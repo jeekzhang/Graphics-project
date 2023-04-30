@@ -6,8 +6,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/vecmath.dir/Vector2f.cpp.o"
   "CMakeFiles/vecmath.dir/Vector3f.cpp.o"
   "CMakeFiles/vecmath.dir/Vector4f.cpp.o"
-  "libvecmath.pdb"
   "libvecmath.a"
+  "libvecmath.pdb"
 )
 
 # Per-language clean rules from dependency scanning.
