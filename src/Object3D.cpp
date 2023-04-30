@@ -80,6 +80,9 @@ bool Group::intersect(const Ray &r, float tmin, Hit &h) const
 
 Plane::Plane(const Vector3f &normal, float d, Material *m) : Object3D(m) {
     // TODO implement Plane constructor
+    _normal = normal; 		
+    _d = d;
+    material = m;
 }
 bool Plane::intersect(const Ray &r, float tmin, Hit &h) const
 {
@@ -87,7 +90,7 @@ bool Plane::intersect(const Ray &r, float tmin, Hit &h) const
     const Vector3f &rayOrigin = r.getOrigin(); // Ray origin in the world coordinate
     const Vector3f &dir = r.getDirection();
 
-    Vector3f T = _offset - rayOrigin;
+    Vector3f T = _d*_normal - rayOrigin;
     float t = Vector3f::dot(T, _normal) / Vector3f::dot(dir, _normal);
 
     if (t < tmin)
