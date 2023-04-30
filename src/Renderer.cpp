@@ -89,9 +89,20 @@ Renderer::traceRay(const Ray &r,
             float distToLight;
             _scene.lights[i]->getIllumination(r.pointAtParameter(h.getT()), dirToLight, lightIntensity, distToLight);
 
+            
             //生成阴影
-            if(_args.shadows){
-                
+            if (_args.shadows) {
+                //以光打到的点作为光源，计算阴影覆盖的区域
+                Vector3f shadowRayOrigin = r.pointAtParameter(h.getT());
+                Ray shadowRay(shadowRayOrigin, dirToLight);
+                Hit shadowHit = Hit();
+                Vector3f shadowTrace = traceRay(shadowRay, 0, 0, shadowHit);
+                //阴影是否与物体相交
+                bool is_shadowIntersectedSth = shadowHit.getT() < std::numeric_limits<float>::max();
+                //阴影与该物体相交的区域
+                float distToIntersection = (shadowRay.pointAtParameter(shadowHit.getT()) - shadowRayOrigin).abs();
+                //如果光线被遮挡则直接跳过，不进行颜色的叠加
+                if (is_shadowIntersectedSth && distToIntersection < distToLight) continue;
             }
 
             color += h.getMaterial()->shade(r, h, dirToLight, lightIntensity);
@@ -103,9 +114,10 @@ Renderer::traceRay(const Ray &r,
             Vector3f V = r.getDirection();
             Vector3f N = h.getNormal().normalized();
             Vector3f R = (V - (2 * Vector3f::dot(V, N) * N)).normalized();
-            //避免噪音
+            Hit reflectHit = Hit();
+            //避免噪声
             Ray reflectRay(r.pointAtParameter(h.getT()) + 0.01 * R, R);
-            color += (h.getMaterial()->getSpecularColor()) * traceRay(reflectRay, 0.0f, bounces - 1, h);
+            color += (h.getMaterial()->getSpecularColor()) * traceRay(reflectRay, 0.0f, bounces - 1, reflectHit);
         }
 
         return color;
