@@ -51,7 +51,7 @@ build/a2 -size 800 800 -input data/scene01_plane.txt  -output test_out/a01.png -
 ### Part2--光线投射
 测试：
 ```bash
-build/a1 ./swp/wineglass.swp
+build/a2 -size 800 800 -input data/scene01_plane.txt  -output test_out/b01.png -normals test_out/b01n.png -depth 8 18 test_out/b01d.png
 ```
 ```bash
 build/a1 ./swp/weird.swp
