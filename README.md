@@ -25,7 +25,7 @@ build/a2 -input data/scene01_plane.txt -output test_out/01.png -size 200 200
 chmod u+x sample_solution/athena/a2
 sample_solution/athena/a2 -input data/scene01_plane.txt -output sample_out/01.png -size 200 200
 sample_solution/athena/a2 -input data/scene06_bunny_1k.txt -output sample_out/06.png -size 300 300 -bounces 4
-sample_solution/athena/a2 data/scene07_arch.txt -output sample_out/07.png -size 300 300 -shadows -bounces 4
+sample_solution/athena/a2 -input data/scene07_arch.txt -output sample_out/07.png -size 300 300 -shadows -bounces 4
 ```
 批量生成图片并测试
 
@@ -69,5 +69,5 @@ build/a2 -size 800 800 -input data/scene05_bunny_200.txt -output test_out/a05.pn
 
 测试：
 ```bash
-build/a1 ./swp/weirder.swp
+
 ```
