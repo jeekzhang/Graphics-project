@@ -85,6 +85,8 @@ public:
     virtual bool intersect(const Ray &r, float tmin, Hit &h) const override;
 
 private:
+    Vector3f _offset;
+    Vector3f _normal; 
     // TOOD fill in members
 };
 
