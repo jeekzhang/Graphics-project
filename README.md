@@ -56,6 +56,11 @@ build/a2 -size 800 800 -input data/scene01_plane.txt  -output test_out/b01.png -
 ```bash
 build/a2 -size 800 800 -input data/scene02_cube.txt   -output test_out/a02.png -normals test_out/a02n.png -depth 8 18 test_out/a02d.png
 ```
+```bash
+build/a2 -size 800 800 -input data/scene03_sphere.txt -output test_out/a03.png -normals test_out/a03n.png -depth 8 18 test_out/a03d.png
+build/a2 -size 800 800 -input data/scene04_axes.txt   -output test_out/a04.png -normals test_out/a04n.png -depth 8 18 test_out/a04d.png
+build/a2 -size 800 800 -input data/scene05_bunny_200.txt -output test_out/a05.png -normals test_out/a05n.png -depth 0.8 1.0 test_out/a05d.png
+```
 ###  Part3--光线追踪与阴影投射
 
 
