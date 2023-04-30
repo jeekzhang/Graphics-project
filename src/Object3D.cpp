@@ -104,19 +104,41 @@ bool Plane::intersect(const Ray &r, float tmin, Hit &h) const
 
     return false;
 }
+
 bool Triangle::intersect(const Ray &r, float tmin, Hit &h) const 
 {
     // TODO implement
+
+    Matrix3f T(_v[1] - _v[0], _v[2] - _v[0], -r.getDirection());
+    Vector3f ans = T.inverse() * (r.getOrigin() - _v[0]);
+    if (ans[0] > 0 && ans[1] > 0 && ans[0] + ans[1] < 1 && ans[2] >= tmin && ans[2] < h.getT())
+    {
+        Vector3f normal = (1 - ans[0] - ans[1]) * _normals[0] + ans[0] * _normals[1] + ans[1] * _normals[2];
+        normal = normal.normalized();
+        h.set(ans[2], this->material, normal);
+        return true;
+    }
     return false;
 }
-
 
 Transform::Transform(const Matrix4f &m,
     Object3D *obj) : _object(obj) {
     // TODO implement Transform constructor
+    _m = m;
 }
 bool Transform::intersect(const Ray &r, float tmin, Hit &h) const
 {
     // TODO implement
+    Matrix4f _m_1 = _m.inverse();
+    Ray TransformRay((_m_1 * Vector4f(r.getOrigin(), 1)).xyz(), (_m_1 * Vector4f(r.getDirection(), 0)).xyz());
+    Hit TransformHit(h.getT(), h.getMaterial(), h.getNormal());
+    TransformHit.set(h.getT(), h.getMaterial(), h.getNormal());
+    if (_object->intersect(TransformRay, tmin / _m.determinant(), TransformHit))
+    {
+        Vector3f normal = (_m_1.transposed() * Vector4f(TransformHit.getNormal(), 0)).xyz();
+        normal = normal.normalized();
+        h.set(TransformHit.getT(), TransformHit.getMaterial(), normal);
+        return true;
+    }
     return false;
 }
