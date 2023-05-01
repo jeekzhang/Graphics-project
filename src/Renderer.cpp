@@ -7,7 +7,7 @@
 #include "VecUtils.h"
 
 #include <limits>
-
+#include <time.h>
 
 Renderer::Renderer(const ArgParser &args) :
     _args(args),
@@ -38,16 +38,29 @@ Renderer::Render()
             float ndcx = 2 * (x / (w - 1.0f)) - 1.0f;
             // Use PerspectiveCamera to generate a ray.
             // You should understand what generateRay() does.
-            Ray r = cam->generateRay(Vector2f(ndcx, ndcy));
+            int count = 1;
+            if (_args.jitter)
+                count = 16;
+            for (int i = 0; i < count; i++)
+            {
+                srand(time(NULL));
+                double random_x = (double)rand() / RAND_MAX;
+                double random_y = (double)rand() / RAND_MAX;
+                ndcx += random_x;
+                ndcy += random_y;
 
-            Hit h;
-            Vector3f color = traceRay(r, cam->getTMin(), _args.bounces, h);
+                Ray r = cam->generateRay(Vector2f(ndcx, ndcy));
 
-            image.setPixel(x, y, color);
-            nimage.setPixel(x, y, (h.getNormal() + 1.0f) / 2.0f);
-            float range = (_args.depth_max - _args.depth_min);
-            if (range) {
-                dimage.setPixel(x, y, Vector3f((h.t - _args.depth_min) / range));
+                Hit h;
+                Vector3f color = traceRay(r, cam->getTMin(), _args.bounces, h);
+
+                image.setPixel(x, y, color);
+                nimage.setPixel(x, y, (h.getNormal() + 1.0f) / 2.0f);
+                float range = (_args.depth_max - _args.depth_min);
+                if (range)
+                {
+                    dimage.setPixel(x, y, Vector3f((h.t - _args.depth_min) / range));
+                }
             }
         }
     }
@@ -89,33 +102,34 @@ Renderer::traceRay(const Ray &r,
             float distToLight;
             _scene.lights[i]->getIllumination(r.pointAtParameter(h.getT()), dirToLight, lightIntensity, distToLight);
 
-            
-            //生成阴影
-            if (_args.shadows) {
-                //以光打到的点作为光源，计算阴影覆盖的区域
+            // 生成阴影
+            if (_args.shadows)
+            {
+                // 以光打到的点作为光源，计算阴影覆盖的区域
                 Vector3f shadowRayOrigin = r.pointAtParameter(h.getT()) + 0.05 * dirToLight;
                 Ray shadowRay(shadowRayOrigin, dirToLight);
                 Hit shadowHit = Hit();
                 Vector3f shadowTrace = traceRay(shadowRay, 0, 0, shadowHit);
-                //阴影是否与物体相交
+                // 阴影是否与物体相交
                 bool is_shadowIntersectedSth = shadowHit.getT() < std::numeric_limits<float>::max();
-                //阴影与该物体相交的区域
+                // 阴影与该物体相交的区域
                 float distToIntersection = (shadowRay.pointAtParameter(shadowHit.getT()) - shadowRayOrigin).abs();
-                //如果光线被遮挡则直接跳过，不进行颜色的叠加
-                if (is_shadowIntersectedSth && distToIntersection < distToLight) continue;
+                // 如果光线被遮挡则直接跳过，不进行颜色的叠加
+                if (is_shadowIntersectedSth && distToIntersection < distToLight)
+                    continue;
             }
 
             color += h.getMaterial()->shade(r, h, dirToLight, lightIntensity);
         }
 
-
         // 递归调用traceRay()
-        if(bounces > 0){
+        if (bounces > 0)
+        {
             Vector3f V = r.getDirection();
             Vector3f N = h.getNormal().normalized();
             Vector3f R = (V - (2 * Vector3f::dot(V, N) * N)).normalized();
             Hit reflectHit = Hit();
-            //避免噪声
+            // 避免噪声
             Ray reflectRay(r.pointAtParameter(h.getT()) + 0.01 * R, R);
             color += (h.getMaterial()->getSpecularColor()) * traceRay(reflectRay, 0.0f, bounces - 1, reflectHit);
         }

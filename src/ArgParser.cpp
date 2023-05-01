@@ -66,6 +66,8 @@ ArgParser::ArgParser(int argc, const char *argv[])
     std::cout << "- depth_max: " << depth_max << std::endl;
     std::cout << "- bounces: " << bounces << std::endl;
     std::cout << "- shadows: " << shadows << std::endl;
+    std::cout << "- jitter: " << jitter << std::endl;
+    std::cout << "- filter: " << filter << std::endl;
 }
 
 void
