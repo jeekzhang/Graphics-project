@@ -21,9 +21,7 @@ Renderer::Render()
     int k = 1;
     if (_args.filter)
         k = 3;
-    int count = 1;
-    if (_args.jitter)
-        count = 16;
+    
     int w = _args.width;
     int h = _args.height;
 
@@ -55,12 +53,10 @@ Renderer::Render()
             // Use PerspectiveCamera to generate a ray.
             // You should understand what generateRay() does.
 
-            for (int i = 0; i < count; i++)
-            {
                 srand(time(NULL));
                 double random_x = (double)rand() / RAND_MAX;
                 double random_y = (double)rand() / RAND_MAX;
-                if (i == 0)
+                if (!_args.jitter)
                     random_x = random_y = 0.0;
                 random_x = ndcx + random_x * w_base;
                 random_y = ndcy + random_y * h_base;
@@ -77,7 +73,7 @@ Renderer::Render()
                 {
                     kdimage.setPixel(x, y, Vector3f((h.t - _args.depth_min) / range));
                 }
-            }
+            
         }
     }
     //只处理样例k=3的情况即可
@@ -115,7 +111,7 @@ Renderer::Render()
                             }
                         }
                         image.setPixel(x,y,color);
-                        nimage.setPixel(x,y,normal);
+                        nimage.setPixel(x,y,normal.normalized());
                         dimage.setPixel(x,y,depth);
                 }
             }
