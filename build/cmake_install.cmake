@@ -1,4 +1,4 @@
-# Install script for directory: /home/ecoli/Desktop/Graphics-project
+# Install script for directory: /home/jeekzhang/pj/starter2
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,7 +39,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/ecoli/Desktop/Graphics-project/build/vecmath/cmake_install.cmake")
+  include("/home/jeekzhang/pj/starter2/build/vecmath/cmake_install.cmake")
 
 endif()
 
@@ -51,5 +51,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/ecoli/Desktop/Graphics-project/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/jeekzhang/pj/starter2/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

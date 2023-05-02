@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/a2.dir/src/main.cpp.o"
+  "CMakeFiles/a2.dir/src/stb.cpp.o"
   "CMakeFiles/a2.dir/src/ArgParser.cpp.o"
   "CMakeFiles/a2.dir/src/Camera.cpp.o"
   "CMakeFiles/a2.dir/src/CubeMap.cpp.o"
@@ -11,10 +13,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/a2.dir/src/Renderer.cpp.o"
   "CMakeFiles/a2.dir/src/SceneParser.cpp.o"
   "CMakeFiles/a2.dir/src/VecUtils.cpp.o"
-  "CMakeFiles/a2.dir/src/main.cpp.o"
-  "CMakeFiles/a2.dir/src/stb.cpp.o"
-  "a2"
   "a2.pdb"
+  "a2"
 )
 
 # Per-language clean rules from dependency scanning.
