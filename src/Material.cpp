@@ -7,14 +7,11 @@ Vector3f Material::shade(const Ray &ray,
 {
     // TODO implement Diffuse and Specular phong terms
     //dirToLight是L，ray.getDirection()是-E
-    float clamp_LN = Vector3f::dot(dirToLight, hit.getNormal());
-    if (clamp_LN < 0)
-        clamp_LN = 0;
+    float clamp_LN = max(0 , Vector3f::dot(dirToLight, hit.getNormal()));
     Vector3f diffuse = clamp_LN * lightIntensity * _diffuseColor;
 
-    float clamp_LR = Vector3f::dot(dirToLight, 2.0 * Vector3f::dot(-ray.getDirection(), hit.getNormal()) * hit.getNormal() + ray.getDirection());
-    if (clamp_LR < 0)
-        clamp_LR = 0;
+    float clamp_LR = max(0, Vector3f::dot(dirToLight, 2.0 * Vector3f::dot(-ray.getDirection(), hit.getNormal()) * hit.getNormal() + ray.getDirection()));
     Vector3f specular = pow(clamp_LR, _shininess) * lightIntensity * _specularColor;
+    
     return diffuse + specular;
 }
