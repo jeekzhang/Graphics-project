@@ -159,17 +159,6 @@ Renderer::traceRay(const Ray &r,
             float distToLight;
             _scene.lights[i]->getIllumination(r.pointAtParameter(h.getT()), dirToLight, lightIntensity, distToLight);
 
-<<<<<<< HEAD
-            
-            //生成阴影
-            if (_args.shadows) {
-                //以光打到的点作为光源，计算阴影覆盖的区域
-                Vector3f shadowRayOrigin = r.pointAtParameter(h.getT()) + 0.01 * dirToLight;
-                Ray shadowRay(shadowRayOrigin, dirToLight);
-                Hit shadowHit = Hit();
-                Vector3f shadowTrace = traceRay(shadowRay, 0.0f, 0, shadowHit);
-                //阴影是否与物体相交
-=======
             // 生成阴影
             if (_args.shadows)
             {
@@ -177,9 +166,8 @@ Renderer::traceRay(const Ray &r,
                 Vector3f shadowRayOrigin = r.pointAtParameter(h.getT()) + 0.01 * dirToLight;
                 Ray shadowRay(shadowRayOrigin, dirToLight);
                 Hit shadowHit = Hit();
-                Vector3f shadowTrace = traceRay(shadowRay, 0.0f, 0.0f, shadowHit);
+                Vector3f shadowTrace = traceRay(shadowRay, 0.0f, 0, shadowHit);
                 // 阴影是否与物体相交
->>>>>>> a7f9072d0ab0f08e67a37f38812ba898d5fef789
                 bool is_shadowIntersectedSth = shadowHit.getT() < std::numeric_limits<float>::max();
                 // 阴影与该物体相交的区域
                 float distToIntersection = (shadowRay.pointAtParameter(shadowHit.getT()) - shadowRayOrigin).abs();
