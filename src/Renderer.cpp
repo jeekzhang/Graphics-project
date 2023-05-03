@@ -166,7 +166,7 @@ Renderer::traceRay(const Ray &r,
                 Vector3f shadowRayOrigin = r.pointAtParameter(h.getT()) + 0.01 * dirToLight;
                 Ray shadowRay(shadowRayOrigin, dirToLight);
                 Hit shadowHit = Hit();
-                Vector3f shadowTrace = traceRay(shadowRay, 0.0f, 0.0f, shadowHit);
+                Vector3f shadowTrace = traceRay(shadowRay, 0.0f, 0, shadowHit);
                 // 阴影是否与物体相交
                 bool is_shadowIntersectedSth = shadowHit.getT() < std::numeric_limits<float>::max();
                 // 阴影与该物体相交的区域
