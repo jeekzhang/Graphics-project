@@ -153,7 +153,7 @@ Renderer::traceRay(const Ray &r,
         color = _scene.getAmbientLight() * h.getMaterial()->getDiffuseColor();
         for (int i = 0; i < _scene.lights.size(); i++)
         {
-            _scene.lights[i];
+            
             Vector3f dirToLight;
             Vector3f lightIntensity;
             float distToLight;
