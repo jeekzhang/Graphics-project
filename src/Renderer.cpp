@@ -93,10 +93,10 @@ Renderer::traceRay(const Ray &r,
             //生成阴影
             if (_args.shadows) {
                 //以光打到的点作为光源，计算阴影覆盖的区域
-                Vector3f shadowRayOrigin = r.pointAtParameter(h.getT()) + 0.05 * dirToLight;
+                Vector3f shadowRayOrigin = r.pointAtParameter(h.getT()) + 0.01 * dirToLight;
                 Ray shadowRay(shadowRayOrigin, dirToLight);
                 Hit shadowHit = Hit();
-                Vector3f shadowTrace = traceRay(shadowRay, 0, 0, shadowHit);
+                Vector3f shadowTrace = traceRay(shadowRay, 0.0f, 0, shadowHit);
                 //阴影是否与物体相交
                 bool is_shadowIntersectedSth = shadowHit.getT() < std::numeric_limits<float>::max();
                 //阴影与该物体相交的区域
