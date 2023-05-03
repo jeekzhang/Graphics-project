@@ -76,5 +76,5 @@ build/a2 -size 800 800 -input data/scene07_arch.txt -bounces 4 -shadows -output 
 
 测试：
 ```bash
-
+build/a2 -size 200 200 -input data/scene01_plane.txt  -output test_out/c01.png -normals test_out/c01n.png -depth 8 18 test_out/c01d.png -jitter -filter
 ```

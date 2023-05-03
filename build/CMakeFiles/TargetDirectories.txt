@@ -1,6 +1,0 @@
-/home/ecoli/Desktop/Graphics-project/build/CMakeFiles/rebuild_cache.dir
-/home/ecoli/Desktop/Graphics-project/build/CMakeFiles/edit_cache.dir
-/home/ecoli/Desktop/Graphics-project/build/CMakeFiles/a2.dir
-/home/ecoli/Desktop/Graphics-project/build/vecmath/CMakeFiles/rebuild_cache.dir
-/home/ecoli/Desktop/Graphics-project/build/vecmath/CMakeFiles/edit_cache.dir
-/home/ecoli/Desktop/Graphics-project/build/vecmath/CMakeFiles/vecmath.dir
