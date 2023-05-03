@@ -102,7 +102,7 @@ $I_{diffuse} = clamp(L,N)*Li*k_{diffuse})$
 漫反射的代码计算如下：
 
 ```C++
-float clamp_LN = max(0 , Vector3f::dot(dirToLight, hit.getNormal()));
+float clamp_LN = std::max(0.0f , Vector3f::dot(dirToLight, hit.getNormal()));
 Vector3f diffuse = clamp_LN * lightIntensity * _diffuseColor;
 ```
 
