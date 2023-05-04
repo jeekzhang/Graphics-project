@@ -40,8 +40,6 @@
 
 </font>
 
-<div STYLE="page-break-after: always;"></div>
-
 ## 一、Phong光照模型：
 
 #### 实现PointLight::getIllumination()
