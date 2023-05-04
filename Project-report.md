@@ -538,6 +538,14 @@ for (int i = -1; i <= 1; i++)
 
 
 
+## 文件说明
+
+- 运行`generate_images.sh`将输出样例图片到sample_out文件夹下
+- 运行`test_cases.sh`将输出代码实现的图片到result_out文件夹下
+- test_out文件夹中为调试过程中逐步生成图片，也是报告展示的图片；error_out文件夹中为调试过程中写的bug导致的图片
+
+
+
 ## 参考
 
 1. [最简理解空间射线与平面交点_射线和面的交点](https://blog.csdn.net/qq_41524721/article/details/103490144)
