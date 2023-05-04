@@ -110,9 +110,9 @@ Renderer::Render()
                                 depth += kdimage.getPixel(center_x + i, center_y + j) / 4;
                             }
                         }
-                        image.setPixel(x,y,color);
-                        nimage.setPixel(x,y,normal.normalized());
-                        dimage.setPixel(x,y,depth);
+                    image.setPixel(x, y, color);
+                    nimage.setPixel(x, y, normal.normalized());
+                    dimage.setPixel(x, y, depth);
                 }
             }
     else if (k == 1)

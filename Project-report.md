@@ -116,9 +116,16 @@ $I_{specular} = clamp(L,R)^s*Li*k_{specular})$
 
 在代码中，`ray.getDirection()`对应着E的反方向，即-E，$k_{specular}$是`_specularColor`，s是`_shininess`。
 
+R未直接给出，需要计算得到
+
+如上示意图，E和R关于N对称，且均为单位矢量。则E和R的和矢量与N重合，长度为E和R分别在N上的投影之和（2倍E在N上投影）。故可得R的公式：$ R=(2*E\cdot N)*N-E$
+
 镜面反射的代码计算如下：
 
-
+```c++
+float clamp_LR = std::max(0.0f, Vector3f::dot(dirToLight, 2.0 * Vector3f::dot(-ray.getDirection(), hit.getNormal()) * hit.getNormal() + ray.getDirection()));
+Vector3f specular = pow(clamp_LR, _shininess) * lightIntensity * _specularColor;
+```
 
 最后，`shade`函数返回$I_{diffuse}+I_{specular}$即可。
 
@@ -167,7 +174,7 @@ return color;
 
 
 ## 三、光线追踪与阴影投射：
-### 光线追踪
+#### 光线追踪
 光线追踪需要完成的任务是在光线投射以后，递归地调用traceRay()函数，渲染出光线多次反射后的结果。具体实现中，我们可以将当前光线击中的物体表面的点作为反射光的光源，根据向量推导计算出反射光线的方向，以这些数据递归进入traceRay()函数就可以完成一次光线反射追踪。我们根据参数bounces进行一定次数的递归，将每次taceRay()返回的颜色参数乘以镜面材料反射率，叠加到当前的颜色中，即可完成所有的光线追踪。关键代码如下：
 ``` c++
     if (bounces > 0)
@@ -182,10 +189,14 @@ return color;
         }
 ```
 这里需要注意的是，在反射光源设定的时候需要好将其稍微远离物体表面，这里是做了$ + 0.01 * R$ 的操作，这样做的目的是为了减小表面噪声的干扰，从而达到更好的渲染效果。
-### 光线追踪效果展示
-<div align=center><img width = '800' height ='400' src ="./test_out/a06.png"/></div>
+#### 光线追踪效果展示
+<div style="display:flex;">
+  <img src="test_out/a06.png" style="width:33%;">
+  <img src="test_out/a06d.png" style="width:33%;">
+  <img src="test_out/a06n.png" style="width:33%;">
+</div>
 
-### 阴影投射
+#### 阴影投射
 阴影投射的实现同样需要调用traceRay()函数，将光线击中的物体表面的点作为阴影光源，原来光线的方向就是阴影光线的方向。调用traceRay()函数即可获得阴影光线击中的点。对于这些点要进行是否与物体相交以及相交区域是否小于当前光线照亮区域的判断，如果满足则跳过后续由当前光线造成的颜色的叠加。关键代码如下：
 ``` c++
         if (_args.shadows)
@@ -207,8 +218,12 @@ return color;
             color += h.getMaterial()->shade(r, h, dirToLight, lightIntensity);
 ```
 根据PPT中的提示，和光线追踪一样，要让阴影光源稍微远离物体表面，这样渲染效果会更好，这里的远离操作和光线追踪时的实现一样。
-### 阴影投射效果展示
-<div align=center><img width = '800' height ='400' src ="./test_out/a07.png"/></div>
+#### 阴影投射效果展示
+<div style="display:flex;">
+  <img src="test_out/a07.png" style="width:33%;">
+  <img src="test_out/a07d.png" style="width:33%;">
+  <img src="test_out/a07n.png" style="width:33%;">
+</div>
 
 ## 四、抗锯齿的问题
 
