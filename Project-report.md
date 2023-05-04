@@ -389,6 +389,20 @@ color += h.getMaterial()->shade(r, h, dirToLight, lightIntensity);
   <img src="test_out/a07d.png" style="width:33%;">
   <img src="test_out/a07n.png" style="width:33%;">
 </div>
+<div style="display:flex;">
+  <img src="test_out/b02.png" style="width:33%;">
+  <img src="test_out/b02d.png" style="width:33%;">
+  <img src="test_out/b02n.png" style="width:33%;">
+</div>
+
+<div style="display:flex;">
+  <img src="test_out/b05.png" style="width:33%;">
+  <img src="test_out/b05n.png" style="width:33%;">
+  <img src="test_out/b05n.png" style="width:33%;">
+</div>
+
+
+
 
 ## 四、抗锯齿的问题
 
