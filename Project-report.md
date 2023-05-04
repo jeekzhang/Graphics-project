@@ -171,70 +171,219 @@ return color;
 
 ## 二、光线投射：
 
-#### 理解Sphere::intersect
+#### 理解Sphere::intersect()
 
 这个抽象为数学问题就是，已知球的球心和半径、投射点的位置和方向，求该点与球是否有交点，若有则求沿光线
 相交范围内的最近交点。
 
-以球心为原点O（0，0，0），设投射点为P（x，y，z）、投射方向为N（i，j，k）。
+以球心为原点O（0，0，0），设投射点为P（x，y，z）、投射方向为R（i，j，k）。
 
-则交点的参数化表达可为P+tN=（x+it，y+jt，z+kt），且在球上，其坐标满足方程：$x^2+y^2+z^2=R^2$
+则交点的参数化表达可为P+tR=（x+it，y+jt，z+kt），且在球上，其坐标满足方程：$x^2+y^2+z^2=r^2$
 
 联立可得关于t一元二次方程$ax^2+bx+c=0$。
 
-其中，$a=N^2,\ b=2*N\cdot P,\  c=P^2-R^2$
+其中，$a=R^2,\ b=2*R\cdot P,\  c=P^2-r^2$
 
 再利用求根公式得出无解或具体解，取满足相交范围（>tmin）的最小t值作为解。
 
-最后返回hit的所需参数分别是t，材质和球心指向交点的方向。
+最后返回hit的所需参数分别是t，材质和球心指向交点的方向单位量。
+
+
+
+#### 实现Plane::intersect()
+
+首先，需要补充Plane的private成员。根据`Plane(const Vector3f &normal, float d, Material *m);`构造函数以及`Plane : Object3D(m)`，可知需补充的成员是：
+
+```c++
+Vector3f _normal; 
+float _d;
+```
+
+其中，`_normal`是平面的单位法向量，`_d`是原点到平面的距离。
+
+同样，我们用参数表达来对交点进行表示：P+tR（投射点为P，投射方向为R）。
+
+再有平面上一点C（可由原点沿法向方向移动_d得到），其与交点的连线和平面法线N垂直。
+
+故有：$(P+tR-C)\cdot N$=0，则$t=\frac{(C-P)\cdot N}{R\cdot N}$。
+
+此外，t要满足在相交范围（>tmin）内。
+
+最后返回hit的所需参数分别是t，材质和平面单位法向。
+
+代码实现：
+
+```c++
+const Vector3f &rayOrigin = r.getOrigin(); 
+const Vector3f &dir = r.getDirection();
+
+Vector3f T = _d*_normal - rayOrigin;
+float t = Vector3f::dot(T, _normal) / Vector3f::dot(dir, _normal);
+
+if (t < tmin)
+    return false;
+
+if (t < h.getT())
+{
+    h.set(t, this->material, _normal);
+    return true;
+}
+
+return false;
+```
+
+
+
+#### 实现Triangle::intersect()
+
+同样，我们用参数表达来对交点进行表示：P+tR（投射点为P，投射方向为R）。
+
+Triangle类的实现由三个点和各自的法向量以及材质组成，对于三角形ABC 内的任意一点Q， 向量AQ 、AB 、AC 线性相关，那么Q的坐标可以表示为如下的公式：
+
+$Q=(1-u-v)A+uB+vC=P+tR$
+
+$u(B-A)+v(C-A)-tR=P-A$
+
+$T=\begin{equation}
+	\begin{bmatrix}
+	 B-A & C-A & -R \\
+	 \end{bmatrix}
+\end{equation}$
+
+$x=\begin{equation}
+	\begin{bmatrix}
+	 u  \\
+	v  \\
+	t 
+	 \end{bmatrix}
+\end{equation}$
+
+$Tx=P-A$ ，则$x=T^{-1}(P-A)$
+
+保证Q在三角形内，那么Q必须满足三个系数都在0到1之间，即u>0,v>0,u+v<1。并且t要满足在相交范围（>tmin）内。
+
+最后返回hit的所需参数分别是t，材质和单位法向，单位法向由三个点的法向系数插值后单位化得到。
+
+代码实现：
+
+```C++
+Matrix3f T(_v[1] - _v[0], _v[2] - _v[0], -r.getDirection());
+Vector3f ans = T.inverse() * (r.getOrigin() - _v[0]);
+if (ans[0] > 0 && ans[1] > 0 && ans[0] + ans[1] < 1 && ans[2] >= tmin && ans[2] < h.getT())
+{
+    Vector3f normal = (1 - ans[0] - ans[1]) * _normals[0] + ans[0] * _normals[1] + ans[1] * _normals[2];
+    normal = normal.normalized();
+    h.set(ans[2], this->material, normal);
+    return true;
+}
+return false;
+```
+
+
+
+#### 实现Transform::intersect()
+
+
+
+#### 效果展示
+
+<div style="display:flex;">
+  <img src="test_out/b01.png" style="width:33%;">
+  <img src="test_out/b01d.png" style="width:33%;">
+  <img src="test_out/b01n.png" style="width:33%;">
+</div>
+
+<div style="display:flex;">
+  <img src="test_out/a02.png" style="width:33%;">
+  <img src="test_out/a02d.png" style="width:33%;">
+  <img src="test_out/a02n.png" style="width:33%;">
+</div>
+
+<div style="display:flex;">
+  <img src="test_out/a03.png" style="width:33%;">
+  <img src="test_out/a03d.png" style="width:33%;">
+  <img src="test_out/a03n.png" style="width:33%;">
+</div>
+
+<div style="display:flex;">
+  <img src="test_out/a04.png" style="width:33%;">
+  <img src="test_out/a04d.png" style="width:33%;">
+  <img src="test_out/a04n.png" style="width:33%;">
+</div>
+
+<div style="display:flex;">
+  <img src="test_out/a05.png" style="width:33%;">
+  <img src="test_out/a05d.png" style="width:33%;">
+  <img src="test_out/a05n.png" style="width:33%;">
+</div>
+
+
 
 ## 三、光线追踪与阴影投射：
 
-#### 光线追踪
-光线追踪需要完成的任务是在光线投射以后，递归地调用traceRay()函数，渲染出光线多次反射后的结果。具体实现中，我们可以将当前光线击中的物体表面的点作为反射光的光源，根据向量推导计算出反射光线的方向，以这些数据递归进入traceRay()函数就可以完成一次光线反射追踪。我们根据参数bounces进行一定次数的递归，将每次taceRay()返回的颜色参数乘以镜面材料反射率，叠加到当前的颜色中，即可完成所有的光线追踪。关键代码如下：
+#### 实现光线追踪
+光线追踪需要完成的任务是在光线投射以后，递归地调用traceRay()函数，渲染出光线多次反射后的结果。
+
+具体实现中，我们可以将当前光线击中的物体表面的点作为反射光的光源，根据向量推导计算出反射光线的方向，以这些数据递归进入traceRay()函数就可以完成一次光线反射追踪。
+
+我们根据参数bounces进行一定次数的递归，将每次taceRay()返回的颜色参数乘以镜面材料反射率，叠加到当前的颜色中，即可完成所有的光线追踪。关键代码如下：
+
 ``` c++
-    if (bounces > 0)
-        {
-            Vector3f V = r.getDirection();
-            Vector3f N = h.getNormal().normalized();
-            Vector3f R = (V - (2 * Vector3f::dot(V, N) * N)).normalized();
-            Hit reflectHit = Hit();
-            // 避免噪声
-            Ray reflectRay(r.pointAtParameter(h.getT()) + 0.01 * R, R);
-            color += (h.getMaterial()->getSpecularColor()) * traceRay(reflectRay, 0.0f, bounces - 1, reflectHit);
-        }
+if (bounces > 0)
+{
+    Vector3f V = r.getDirection();
+    Vector3f N = h.getNormal().normalized();
+    Vector3f R = (V - (2 * Vector3f::dot(V, N) * N)).normalized();
+    Hit reflectHit = Hit();
+    // 避免噪声
+    Ray reflectRay(r.pointAtParameter(h.getT()) + 0.01 * R, R);
+    color += (h.getMaterial()->getSpecularColor()) * traceRay(reflectRay, 0.0f, bounces - 1, reflectHit);
+}
 ```
 这里需要注意的是，在反射光源设定的时候需要好将其稍微远离物体表面，这里是做了$ + 0.01 * R$ 的操作，这样做的目的是为了减小表面噪声的干扰，从而达到更好的渲染效果。
-#### 光线追踪效果展示
+
+
+
+#### 效果展示
+
 <div style="display:flex;">
   <img src="test_out/a06.png" style="width:33%;">
   <img src="test_out/a06d.png" style="width:33%;">
   <img src="test_out/a06n.png" style="width:33%;">
 </div>
 
-#### 阴影投射
-阴影投射的实现同样需要调用traceRay()函数，将光线击中的物体表面的点作为阴影光源，原来光线的方向就是阴影光线的方向。调用traceRay()函数即可获得阴影光线击中的点。对于这些点要进行是否与物体相交以及相交区域是否小于当前光线照亮区域的判断，如果满足则跳过后续由当前光线造成的颜色的叠加。关键代码如下：
-``` c++
-        if (_args.shadows)
-            {
-                // 以光打到的点作为光源，计算阴影覆盖的区域
-                Vector3f shadowRayOrigin = r.pointAtParameter(h.getT()) + 0.01 * dirToLight;
-                Ray shadowRay(shadowRayOrigin, dirToLight);
-                Hit shadowHit = Hit();
-                Vector3f shadowTrace = traceRay(shadowRay, 0.0f, 0, shadowHit);
-                // 阴影是否与物体相交
-                bool is_shadowIntersectedSth = shadowHit.getT() < std::numeric_limits<float>::max();
-                // 阴影与该物体相交的区域
-                float distToIntersection = (shadowRay.pointAtParameter(shadowHit.getT()) - shadowRayOrigin).abs();
-                // 如果光线被遮挡则直接跳过，不进行颜色的叠加
-                if (is_shadowIntersectedSth && distToIntersection < distToLight)
-                    continue;
-            }
 
-            color += h.getMaterial()->shade(r, h, dirToLight, lightIntensity);
+#### 实现阴影投射
+
+阴影投射的实现同样需要调用traceRay()函数，将光线击中的物体表面的点作为阴影光源，原来光线的方向就是阴影光线的方向，调用traceRay()函数即可获得阴影光线击中的点。
+
+对于这些点要进行是否与物体相交以及相交区域是否小于当前光线照亮区域的判断，如果满足则跳过后续由当前光线造成的颜色的叠加。关键代码如下：
+
+``` c++
+if (_args.shadows)
+{
+    // 以光打到的点作为光源，计算阴影覆盖的区域
+    Vector3f shadowRayOrigin = r.pointAtParameter(h.getT()) + 0.01 * dirToLight;
+    Ray shadowRay(shadowRayOrigin, dirToLight);
+    Hit shadowHit = Hit();
+    Vector3f shadowTrace = traceRay(shadowRay, 0.0f, 0, shadowHit);
+    // 阴影是否与物体相交
+    bool is_shadowIntersectedSth = shadowHit.getT() < std::numeric_limits<float>::max();
+    // 阴影与该物体相交的区域
+    float distToIntersection = (shadowRay.pointAtParameter(shadowHit.getT()) - shadowRayOrigin).abs();
+    // 如果光线被遮挡则直接跳过，不进行颜色的叠加
+    if (is_shadowIntersectedSth && distToIntersection < distToLight)
+        continue;
+}
+
+color += h.getMaterial()->shade(r, h, dirToLight, lightIntensity);
 ```
 根据PPT中的提示，和光线追踪一样，要让阴影光源稍微远离物体表面，这样渲染效果会更好，这里的远离操作和光线追踪时的实现一样。
-#### 阴影投射效果展示
+
+
+
+#### 效果展示
+
 <div style="display:flex;">
   <img src="test_out/a07.png" style="width:33%;">
   <img src="test_out/a07d.png" style="width:33%;">
@@ -243,11 +392,141 @@ return color;
 
 ## 四、抗锯齿的问题
 
+在进行具体代码实现之前，我们将-jitter 和 -filter同其他参数一样打印到输出端，以便查看是否开启了抖动采样和高斯滤波。
+
+```c++
+std::cout << "Args:\n";
+...
+std::cout << "- jitter: " << jitter << std::endl;
+std::cout << "- filter: " << filter << std::endl;
+```
+
+
+
+#### 实现抖动采样
+
+对于每次循环，x和y都对应了固定的ndcx和ndcy：
+
+```
+float ndcy = 2 * y / (h - 1.0f) - 1.0f;
+float ndcx = 2 * x / (w - 1.0f) - 1.0f;
+```
+
+抖动采样即是让ndcx和ndcy不固定，每次加入一定的随机偏差，即让原式中的x和y加上0到1的随机值，随机值可由(double)rand() / RAND_MAX获取。若jitter不开启，则通过设置偏差为0来保持原样。代码实现如下：
+
+```c++
+float h_base = 2 / (h - 1.0f);
+float w_base = 2 / (w - 1.0f);
+for (int y = 0; y < h; ++y)
+{
+    float ndcy = y * h_base - 1.0f;
+    for (int x = 0; x < w; ++x)
+    {
+        float ndcx = x * w_base - 1.0f;
+        // Use PerspectiveCamera to generate a ray.
+        // You should understand what generateRay() does.
+
+        srand(time(NULL));
+        double random_x = (double)rand() / RAND_MAX;
+        double random_y = (double)rand() / RAND_MAX;
+        if (!_args.jitter)
+            random_x = random_y = 0.0;
+        random_x = ndcx + random_x * w_base;
+        random_y = ndcy + random_y * h_base;
+
+        Ray r = cam->generateRay(Vector2f(random_x, random_y));
+		...
+```
+
+至于PPT中Hint的重复16次循环，我们没有太理解。无论放在两层for循环内或者外，color的值都只会保留最后一次的结果用于setPixel，则前15次的计算均没有意义。
+
+还有就是`每次都对ndcx，ndcy加上一定的偏差，偏差的值从0到1随机选取`的表述可能会引起歧义，我最开始直接将ndcx和ndcy加上一定偏差后用于计算，出现了问题，后面才发现ndcx和ndcy的范围也才-1到1之间，故需要将偏差乘上base再相加。错误效果如下：
+
+<div style="display:flex;">
+  <img src="error_out/c01.png" style="width:33%;">
+  <img src="error_out/c01d.png" style="width:33%;">
+  <img src="error_out/c01n.png" style="width:33%;">
+</div>
+
+
+
+#### 实现高斯滤波
+
+对大小（h，w）的图片先进行倍数是k（k=3）的上采样，即图片大小变为（h\*k，w*k），得到kimage。
+
+再对kimage进行下采样，将k×k个像素加权求和变成1个像素。各个像素权重如下：
+
+<div style="display:flex;">
+  <img src="img/weight.jpg" style="width:33%;">
+</div>
+
+同时，除了color，depth和normal也须做如下的加权下采样。特别注意normal加权后的结果要进行单位化，不然就是这种结果：
+
+<div style="display:flex;">
+  <img src="error_out/d01n.png" style="width:33%;">
+</div>
+
+关键代码：
+
+```c++
+int k = 1;
+if (_args.filter)
+    k = 3;
+...
+int center_x = x * k + 1;
+int center_y = y * k + 1;
+Vector3f color(0, 0, 0);
+Vector3f normal(0, 0, 0);
+Vector3f depth(0, 0, 0);
+for (int i = -1; i <= 1; i++)
+    for (int j = -1; j <= 1; j++)
+    {
+        if (abs(i) + abs(j) == 2)
+        {
+            color += kimage.getPixel(center_x + i, center_y + j) / 16;
+            normal += knimage.getPixel(center_x + i, center_y + j) / 16;
+            depth += kdimage.getPixel(center_x + i, center_y + j) / 16;
+        }
+
+        if (abs(i) + abs(j) == 1)
+        {
+            color += kimage.getPixel(center_x + i, center_y + j) / 8;
+            normal += knimage.getPixel(center_x + i, center_y + j) / 8;
+            depth += kdimage.getPixel(center_x + i, center_y + j) / 8;
+        }
+        else
+        {
+            color += kimage.getPixel(center_x + i, center_y + j) / 4;
+            normal += knimage.getPixel(center_x + i, center_y + j) / 4;
+            depth += kdimage.getPixel(center_x + i, center_y + j) / 4;
+        }
+        ...
+	image.setPixel(x, y, color);
+    nimage.setPixel(x, y, normal.normalized());
+    dimage.setPixel(x, y, depth);
+```
+
+
+
+#### 实现效果
+
+<div style="display:flex;">
+  <img src="test_out/c01.png" style="width:33%;">
+  <img src="test_out/c01d.png" style="width:33%;">
+  <img src="test_out/c01n.png" style="width:33%;">
+</div>
+
+左图的细节展示：
+
+<div style="display:flex;">
+  <img src="img/detail.png" style="width:50%;">
+</div>
+
 
 
 ## 参考
 
-
+1. [最简理解空间射线与平面交点_射线和面的交点](https://blog.csdn.net/qq_41524721/article/details/103490144)
 
 
 

@@ -87,7 +87,7 @@ Plane::Plane(const Vector3f &normal, float d, Material *m) : Object3D(m) {
 bool Plane::intersect(const Ray &r, float tmin, Hit &h) const
 {
     // TODO implement
-    const Vector3f &rayOrigin = r.getOrigin(); // Ray origin in the world coordinate
+    const Vector3f &rayOrigin = r.getOrigin(); 
     const Vector3f &dir = r.getDirection();
 
     Vector3f T = _d*_normal - rayOrigin;
