@@ -488,6 +488,18 @@ for (int y = 0; y < h; ++y)
 
 还有就是`每次都对ndcx，ndcy加上一定的偏差，偏差的值从0到1随机选取`的表述可能会引起歧义，我最开始直接将ndcx和ndcy加上一定偏差后用于计算，出现了问题，后面才发现ndcx和ndcy的范围也才-1到1之间，故需要将偏差乘上base再相加。错误效果如下：
 
+
+
+
+
+
+
+
+
+
+
+
+
 <div style="display:flex;">
   <img src="error_out/c01.png" style="width:33%;">
   <img src="error_out/c01d.png" style="width:33%;">
