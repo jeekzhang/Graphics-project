@@ -190,7 +190,7 @@ return color;
 
 #### 实现Plane::intersect()
 
-首先，需要补充Plane的private成员。根据`Plane(const Vector3f &normal, float d, Material *m);`构造函数以及`Plane : Object3D(m)`，可知需补充的成员是：
+首先，需要补充`Plane`的`private`成员。根据`Plane(const Vector3f &normal, float d, Material *m);`构造函数以及`Plane : Object3D(m)`，可知需补充的成员是：
 
 ```c++
 Vector3f _normal; 
@@ -236,7 +236,7 @@ return false;
 
 同样，我们用参数表达来对交点进行表示：P+tR（投射点为P，投射方向为R）。
 
-Triangle类的实现由三个点和各自的法向量以及材质组成，对于三角形ABC 内的任意一点Q， 向量AQ 、AB 、AC 线性相关，那么Q的坐标可以表示为如下的公式：
+`Triangle`类的实现由三个点和各自的法向量以及材质组成，对于三角形ABC 内的任意一点Q， 向量AQ 、AB 、AC 线性相关，那么Q的坐标可以表示为如下的公式：
 
 $Q=(1-u-v)A+uB+vC=P+tR$
 
@@ -280,6 +280,34 @@ return false;
 
 
 #### 实现Transform::intersect()
+
+与`Plane::intersect()`类似，需要补充`private`成员，类型为`Matrix4f`，即变换矩阵，将子对象从局部对象坐标移动到世界坐标。
+
+```c++
+Matrix4f _m;
+```
+
+首先，先计算世界坐标系到子对象坐标系的转换矩阵，即_m的逆，再将该矩阵用于计算光线在子对象坐标系的参数（起点和方向）得到子对象所需的光线。
+
+然后求子对象与变换后光线的交，这里需要注意的是tmin的变换，由于变换可能涉及到拉伸，应将tmin乘以变化后的光线方向长度。
+
+若相交，则将hit处的法线从子对象坐标转换回世界坐标，并注意单位化。
+
+代码实现：
+
+```c++
+Matrix4f _m_1 = _m.inverse();
+Vector3f TransformD((_m_1 * Vector4f(r.getDirection(), 0)).xyz());
+Ray TransformRay((_m_1 * Vector4f(r.getOrigin(), 1)).xyz(), TransformD);
+if (_object->intersect(TransformRay, tmin * TransformD.abs(), h))
+{
+    Vector3f normal = (_m_1.transposed() * Vector4f(h.getNormal(), 0)).xyz();
+    normal = normal.normalized();
+    h.set(h.getT(), h.getMaterial(), normal);
+    return true;
+}
+return false;
+```
 
 
 
@@ -387,18 +415,24 @@ color += h.getMaterial()->shade(r, h, dirToLight, lightIntensity);
   <img src="test_out/a07d.png" style="width:33%;">
   <img src="test_out/a07n.png" style="width:33%;">
 </div>
+
+
+
 <div style="display:flex;">
   <img src="test_out/b02.png" style="width:33%;">
   <img src="test_out/b02d.png" style="width:33%;">
   <img src="test_out/b02n.png" style="width:33%;">
 </div>
 
+
 <div style="display:flex;">
   <img src="test_out/b05.png" style="width:33%;">
   <img src="test_out/b05n.png" style="width:33%;">
   <img src="test_out/b05n.png" style="width:33%;">
 </div>
-
+$$
+将图片的背景色正确着出
+$$
 
 
 
@@ -546,9 +580,8 @@ for (int i = -1; i <= 1; i++)
 
 ## 参考
 
-1. [最简理解空间射线与平面交点_射线和面的交点](https://blog.csdn.net/qq_41524721/article/details/103490144)
-
-
+1. [空间直线与球面的相交算法](https://blog.csdn.net/qq_21291397/article/details/107252684)
+2. [最简理解空间射线与平面交点_射线和面的交点](https://blog.csdn.net/qq_41524721/article/details/103490144)
 
 </font>
 

@@ -130,14 +130,13 @@ bool Transform::intersect(const Ray &r, float tmin, Hit &h) const
 {
     // TODO implement
     Matrix4f _m_1 = _m.inverse();
-    Ray TransformRay((_m_1 * Vector4f(r.getOrigin(), 1)).xyz(), (_m_1 * Vector4f(r.getDirection(), 0)).xyz());
-    Hit TransformHit(h.getT(), h.getMaterial(), h.getNormal());
-    TransformHit.set(h.getT(), h.getMaterial(), h.getNormal());
-    if (_object->intersect(TransformRay, tmin / _m.determinant(), TransformHit))
+    Vector3f TransformD((_m_1 * Vector4f(r.getDirection(), 0)).xyz());
+    Ray TransformRay((_m_1 * Vector4f(r.getOrigin(), 1)).xyz(), TransformD);
+    if (_object->intersect(TransformRay, tmin * TransformD.abs(), h))
     {
-        Vector3f normal = (_m_1.transposed() * Vector4f(TransformHit.getNormal(), 0)).xyz();
+        Vector3f normal = (_m_1.transposed() * Vector4f(h.getNormal(), 0)).xyz();
         normal = normal.normalized();
-        h.set(TransformHit.getT(), TransformHit.getMaterial(), normal);
+        h.set(h.getT(), h.getMaterial(), normal);
         return true;
     }
     return false;
