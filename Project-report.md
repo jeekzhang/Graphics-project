@@ -137,7 +137,7 @@ $I=I_{ambient}+\sum I_{shade}$
 
 在代码中，原始`traceRay`函数先判断相交，若相交则直接返回了材质的漫反射颜色。
 
-为实现上述公式，$I_{ambient}$由`_scene.getAmbientLight()`得到；同时遍历`_scene.lights`并通过`shade`获取各个各个光源的漫反射和镜面反射之和，所需的参数值由`getIllumination`计算得到。
+为实现上述公式，$I_{ambient}$由`_scene.getAmbientLight()`得到；同时遍历`_scene.lights`并通过`shade`获取各个光源的漫反射和镜面反射之和，所需的参数值由`getIllumination`计算得到。
 
 具体的代码实现：
 
