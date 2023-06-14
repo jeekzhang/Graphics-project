@@ -2,7 +2,14 @@
 Computer Graphics Course (COMP130018.01) Project of Fudan University.
 
 ## Project1--曲线和曲面造型技术
+分支切换
+
+```bash
+git checkout Curves-surfaces
+```
+
 环境搭建（linux）
+
 ```bash
 sudo apt-get install build-essential cmake
 sudo apt-get install freeglut3-dev xorg-dev libxrandr-dev libsdl2-de
