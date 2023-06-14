@@ -49,9 +49,18 @@ build/a1 ./swp/weird.swp
 ```bash
 build/a1 ./swp/weirder.swp
 ```
+
+
 ## Project--2 光照模型与光线追踪
 
+分支切换
+
+```bash
+git checkout Ray-casting-tracing
+```
+
 环境搭建（linux）
+
 ```bash
 sudo apt-get install build-essential cmake
 sudo apt-get install freeglut3-dev xorg-dev libxrandr-dev libsdl2-de
@@ -126,3 +135,7 @@ build/a2 -size 800 800 -input data/scene07_arch.txt -bounces 4 -shadows -output 
 ```bash
 build/a2 -size 200 200 -input data/scene01_plane.txt  -output test_out/c01.png -normals test_out/c01n.png -depth 8 18 test_out/c01d.png -jitter -filter
 ```
+
+
+
+——具体内容详见各分支的README中的实验报告部分
