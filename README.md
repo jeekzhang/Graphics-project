@@ -1,5 +1,5 @@
 # Graphics-project
-Computer Graphics Course (COMP130018.01) Project of Fudan University.
+Computer Graphics Course (COMP130018.01) Project of Fudan University.  
 A copy of MIT 6.837, including Curves-surfaces(assn1) and Ray-casting-tracing(assn4, assn5).
 ## Project1--曲线和曲面造型技术
 分支切换
