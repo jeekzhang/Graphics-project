@@ -1,6 +1,6 @@
 # Graphics-project
-Computer Graphics Course (COMP130018.01, 2023 Spring) Project of Fudan University.  
-————复旦大学2023年春《计算机图形学》课程项目  
+——复旦大学2023年春《计算机图形学》课程项目  
+Computer Graphics Course (COMP130018.01, 2023 Spring) Project of Fudan University.   
 A copy of MIT 6.837, including Curves-surfaces(assn1) and Ray-casting-tracing(assn4, assn5).
 ## Project1--曲线和曲面造型技术
 分支切换
