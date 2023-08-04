@@ -381,7 +381,7 @@ for (int i = 0; i < m - flag; i++)
 
 然后再在这之间通过回退后的最后一个点和首端点进行线性插值：  
 
-P<sub>t</sub> = (1-f)*P<sub>1</sub> + f*P<sub>1</sub> (f∈[0,1])
+P<sub>t</sub> = (1-f)\*P<sub>1</sub> + f\*P<sub>1</sub> (f∈[0,1])
 
 注意除了位置V之外，其余都需要进行单位化。
 
